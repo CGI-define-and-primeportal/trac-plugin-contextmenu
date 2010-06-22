@@ -1,25 +1,28 @@
+/* overwrite padding-left rules from browser.css */
+div.context-menu div a {
+  padding-left: 0 !important;
+}
 div.context-menu {
   float: right;
 }
 div.context-menu span {
+  display: block;
   cursor: pointer;
+  padding: 0 10px;
 }
-div.context-menu ul {
+div.context-menu > div {
   width: 200px;
   margin: 0;
   padding: 1ex;
-  list-style: none;
   position: absolute;
   background-color: white;
   border: 1px solid #ddd;
+  border-top: none;
+  white-space: nowrap !important;
 }
-div.context-menu li {
-  margin: 0;
-  padding: 0;
-}
-div.context-menu li a {
+div.context-menu > div > div > a {
   display: block;
 }
-div.context-menu li a:hover {
-  background-color: #ddd !important;
+div.context-menu > div a:hover {
+  background-color: #eee !important;
 }

@@ -12,21 +12,28 @@ from genshi.core import START, Markup
 from trac.config import Option
 from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript
 from pkg_resources import resource_filename
-try:
-    from svnurls import SVNURLs
-except ImportError:
-    SVNURLs = None
+import os
 
+
+class InternalNameHolder(Component):
+    implements(ISourceBrowserContextMenuProvider)
+    order = 0
+    # IContextMenuProvider methods
+    def get_content(self, req, entry, stream, data):
+        reponame = data['reponame'] or ''
+        filename = os.path.normpath(os.path.join(reponame, entry.path))
+        return tag.span(filename, class_="filenameholder %s" % entry.kind, style="display:none")
+    
 class SubversionLink(Component):
     """Generate direct link to file in svn repo"""
     implements(ISourceBrowserContextMenuProvider)
-    order = 0
+    order = 1
     svn_base_url = Option('svn', 'repository_url')
     separator_after = False
     # IContextMenuProvider methods
     def get_content(self, req, entry, stream, data):
-        href      = req.href.svn(data['reponame'], entry.path, rev=data['stickyrev'])
-        return tag.a('Subversion URL', href=href)
+        href = req.href.svn(data['reponame'], entry.path, rev=data['stickyrev'])
+        return tag.a('[svn]', href=href)
 
 
 class DeleteResourceLink(Component):
@@ -83,18 +90,19 @@ class SourceBrowserContextMenu(Component):
                 # Remove colspan and insert an empty cell for checkbox column
                 stream |= Transformer('//table[@id="dirlist"]//td[@colspan="5"]').attr('colspan', None).before(tag.td())
             else:
+                # First row = //tr[1]
                 row_index = 1
             for entry in data['dir']['entries']:
                 menu = tag.div(tag.span(Markup('&#9662;')), # FIXME; image instead
-                               tag.ul(style="display:none"), id="ctx%s" % idx, 
+                               tag.div(class_="ctx-foldable", style="display:none"), id="ctx%s" % idx, 
                                class_="context-menu")
                 for provider in sorted(self.context_menu_providers, key=lambda x: x.order):
                     content = provider.get_content(req, entry, stream, data)
                     if content:
-                        menu.children[1].append(tag.li(content))
+                        menu.children[1].append(tag.div(content))
                     if (hasattr(provider, 'separator_after') 
                             and provider.separator_after):
-                        menu.children[1].append(tag.li("---")) # FIXME
+                        menu.children[1].append(tag.div(style="padding-top:.5ex;margin-bottom:.5ex;border-bottom:1px inset #555")) # FIXME
                 if menu:
                     ## XHR rows don't have a tbody in the stream
                     if data['xhr']:
@@ -103,12 +111,11 @@ class SourceBrowserContextMenu(Component):
                         path_prefix = '//table[@id="dirlist"]//tbody'
                     # Add the menu
                     stream |= Transformer('%s//tr[%d]//td[@class="name"]' % (path_prefix, idx + row_index)).prepend(menu)
-                    # Add a checkbox
-                    cb = tag.td(tag.input(type='checkbox', id="cb%s" % idx, class_='fileselect'))
-                    stream |= Transformer('%s//tr[%d]//td[@class="name"]' % (path_prefix, idx + row_index)).before(cb)
-                    
+                # Add td+checkbox
+                cb = tag.td(tag.input(type='checkbox', id="cb%s" % idx, class_='fileselect'))
+                stream |= Transformer('%s//tr[%d]//td[@class="name"]' % (path_prefix, idx + row_index)).before(cb)
                 idx += 1
-            stream |= Transformer('//th[1]').before(tag.th())   
+            stream |= Transformer('//th[1]').before(tag.th())
         return stream
     
     # ITemplateProvider methods
