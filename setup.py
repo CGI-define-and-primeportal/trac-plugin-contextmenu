@@ -38,7 +38,8 @@ setup(
     license = "Copyright (c) 2010, Logica. All rights reserved. Released under the 3-clause BSD license.",
     url = "http://define4.trac.uk.logica.com",
     packages = ['contextmenuplugin'],
-    package_data = {'contextmenuplugin' : ['htdocs/js/*.js', 'htdocs/css/*.css']}, 
+    package_data = {'contextmenuplugin' : ['htdocs/*.js',
+                                           'htdocs/*.css']}, 
     install_requires = [
     ],
     entry_points = {
