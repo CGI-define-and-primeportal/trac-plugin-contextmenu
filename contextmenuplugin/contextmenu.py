@@ -7,8 +7,8 @@ from genshi.builder import tag
 from trac.core import Component, ExtensionPoint, implements
 from trac.web.api import ITemplateStreamFilter
 from api import ISourceBrowserContextMenuProvider
-from genshi.filters.transform import Transformer, StreamBuffer
-from genshi.core import START, Markup
+from genshi.filters.transform import Transformer
+from genshi.core import Markup
 from trac.config import Option
 from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript
 from pkg_resources import resource_filename
@@ -32,7 +32,17 @@ class SubversionLink(Component):
     separator_after = False
     # IContextMenuProvider methods
     def get_content(self, req, entry, stream, data):
-        href = req.href.svn(data['reponame'], entry.path, rev=data['stickyrev'])
+        if isinstance(entry, basestring):
+            path = entry
+        else:
+            try:
+                path = entry.path
+            except AttributeError:
+                path = entry['path']
+        href = self.svn_base_url.rstrip('/')
+        if data['reponame']:
+            href += '/' + data['reponame']
+        href += '/' + path
         return tag.a('[svn]', href=href)
 
 
@@ -45,7 +55,7 @@ class DeleteResourceLink(Component):
     def get_content(self, req, entry, stream, data):
         href = req.href.browser(data['reponame'], entry.path, 
                                 rev=data['stickyrev'], delete=1)
-        return tag.a('Delete...', href=req.href.delete(entry.path) + 'FIXME')
+        return tag.a('Delete...', href=href)
 
 class SendResourceLink(Component):
     """Generate "Share file" menu item"""
@@ -77,6 +87,14 @@ class SourceBrowserContextMenu(Component):
     
     def filter_stream(self, req, method, filename, stream, data):
         if filename in ('browser.html', 'dir_entries.html'):
+            if 'path' not in data:
+                # Probably an upstream error
+                return stream
+            # provide a link to the svn repository
+            stream |= Transformer("//div[@id='content']/h1").after(SubversionLink(self.env).get_content(req, data['path'], stream, data))
+            # No dir entries; we're showing a file
+            if not data['dir']: 
+                return stream
             # FIXME: The idx is only good for finding rows, not generating element ids.
             # Xhr rows are only using dir_entries.html, not browser.html.
             # The xhr-added rows' ids are added using js (see expand_dir.js)
