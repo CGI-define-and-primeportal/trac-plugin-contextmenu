@@ -26,3 +26,8 @@ div.context-menu > div > div > a {
 div.context-menu > div a:hover {
   background-color: #eee !important;
 }
+div.context-menu .separator {
+  padding-top: .5ex;
+  margin-bottom: .5ex;
+  border-bottom: 1px inset #555;
+}

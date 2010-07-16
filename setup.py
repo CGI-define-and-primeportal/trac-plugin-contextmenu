@@ -1,3 +1,5 @@
+# coding: utf-8
+#
 # Copyright (c) 2010, Logica
 # 
 # All rights reserved.
@@ -34,14 +36,16 @@ setup(
     version = '0.0',
     author = 'Pontus Enmark',
     author_email = 'pontus.enmark@logica.com',
-    description = "Share files from the source browser via e-mail or other means.",
+    description = "Drop down menu for the Source Browser.",
     license = "Copyright (c) 2010, Logica. All rights reserved. Released under the 3-clause BSD license.",
-    url = "http://define4.trac.uk.logica.com",
+    url = "http://d4.planetdefine.net",
     packages = ['contextmenuplugin'],
     package_data = {'contextmenuplugin' : ['htdocs/*.js',
                                            'htdocs/*.css']}, 
     install_requires = [
     ],
+    tests_require = ['nose'],
+    test_suite = 'nose.collector',
     entry_points = {
         'trac.plugins': [
             'contextmenuplugin = contextmenuplugin',
