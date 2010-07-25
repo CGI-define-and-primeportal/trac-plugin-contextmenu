@@ -94,6 +94,33 @@ class SubversionLink(Component):
         href += '/' + path
         return tag.a('Subversion', href=href)
 
+class WikiToBrowserLink(Component):
+    """Generate wiki link"""
+    implements(ISourceBrowserContextMenuProvider)
+
+    # IContextMenuProvider methods
+    def get_order(self, req):
+        return 2
+
+    def get_draw_separator(self, req):
+        return True
+    
+    def get_content(self, req, entry, stream, data):
+        if isinstance(entry, basestring):
+            path = entry
+        else:
+            try:
+                path = entry.path
+            except AttributeError:
+                path = entry['path']
+        href = ''
+        if data['reponame']:
+            href += '/' + data['reponame']
+        href += '/' + path
+        if data.has_key('rev'):
+            href += "@%s" % data['rev']
+        return tag.a('Wiki Link (to copy)', href="source:%s" % href)
+
 class SendResourceLink(Component):
     """Generate "Share file" menu item"""
     implements(ISourceBrowserContextMenuProvider)
