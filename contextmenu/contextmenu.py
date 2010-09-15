@@ -152,7 +152,7 @@ class SourceBrowserContextMenu(Component):
                 # Probably an upstream error
                 return stream
             # provide a link to the svn repository at the top of the Browse Source listing
-            if self.env.is_component_enabled("contextmenuplugin.contextmenu.SubversionLink"):
+            if self.env.is_component_enabled("contextmenu.contextmenu.SubversionLink"):
                 content = SubversionLink(self.env).get_content(req, data['path'], stream, data)
                 if content:
                     stream |= Transformer("//div[@id='content']/h1").after(content)

@@ -33,14 +33,14 @@ from setuptools import find_packages, setup
 
 setup(
     name = 'ContextMenuPlugin', 
-    version = '0.0',
+    version = '0.1',
     author = 'Pontus Enmark',
     author_email = 'pontus.enmark@logica.com',
     description = "Drop down menu for the Source Browser.",
     license = "Copyright (c) 2010, Logica. All rights reserved. Released under the 3-clause BSD license.",
-    url = "http://d4.planetdefine.net",
-    packages = ['contextmenuplugin'],
-    package_data = {'contextmenuplugin' : ['htdocs/*.js',
+    url = "http://trac-hacks.org/wiki/ContextMenuPlugin",
+    packages = ['contextmenu'],
+    package_data = {'contextmenu' : ['htdocs/*.js',
                                            'htdocs/*.css']}, 
     install_requires = [
     ],
@@ -48,7 +48,7 @@ setup(
     test_suite = 'nose.collector',
     entry_points = {
         'trac.plugins': [
-            'contextmenuplugin = contextmenuplugin',
+            'contextmenu = contextmenu',
         ]    
     }
 )
