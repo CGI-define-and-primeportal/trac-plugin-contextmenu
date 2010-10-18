@@ -57,7 +57,7 @@ class InternalNameHolder(Component):
     def get_draw_separator(self, req):
         return False
     
-    def get_content(self, req, entry, stream, data):
+    def get_content(self, req, entry, data):
         reponame = data['reponame'] or ''
         filename = os.path.normpath(os.path.join(reponame, entry.path))
         return tag.span(filename, class_="filenameholder %s" % entry.kind,
@@ -76,7 +76,7 @@ class SubversionLink(Component):
     def get_draw_separator(self, req):
         return True
     
-    def get_content(self, req, entry, stream, data):
+    def get_content(self, req, entry, data):
         if self.env.is_component_enabled("svnurls.svnurls.svnurls"):
             # They are already providing links to subversion, so we won't duplicate them.
             return None
@@ -104,7 +104,7 @@ class WikiToBrowserLink(Component):
     def get_draw_separator(self, req):
         return True
     
-    def get_content(self, req, entry, stream, data):
+    def get_content(self, req, entry, data):
         if isinstance(entry, basestring):
             path = entry
         else:
@@ -130,7 +130,7 @@ class WikiToBrowserLink(Component):
 #        return False
 #    
 #    # IContextMenuProvider methods
-#    def get_content(self, req, entry, stream, data):
+#    def get_content(self, req, entry, data):
 #        if not entry.isdir:
 #            return tag.a(_('Share file'), href=req.href.share(entry.path) + 'FIXME')
 

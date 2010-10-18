@@ -47,7 +47,7 @@ class DeleteResourceLink(Component):
     def get_draw_separator(self, req):
         return False
     
-    def get_content(self, req, entry, stream, data):
+    def get_content(self, req, entry, data):
         href = req.href.browser(data['reponame'], entry.path, 
                                 rev=data['stickyrev'], delete=1)
         return tag.a(_('Delete item'), href=href)
@@ -63,6 +63,6 @@ class CreateSubFolderLink(Component):
         return False
     
     # IContextMenuProvider methods
-    def get_content(self, req, entry, stream, data):
+    def get_content(self, req, entry, data):
         if entry.isdir:
             return tag.a(_('Create Subfolder'), href=req.href.newfolder(entry.path) + 'FIXME')

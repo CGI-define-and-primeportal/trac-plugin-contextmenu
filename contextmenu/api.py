@@ -43,5 +43,5 @@ class ISourceBrowserContextMenuProvider(Interface):
     def get_draw_separator(req):
         """Whether a separator should be rendered after this provider (boolean)"""
         
-    def get_content(req, item, stream, data):
+    def get_content(req, item, data):
         """Return genshi tag, or None to skip this menu item."""
