@@ -120,19 +120,19 @@ class WikiToBrowserLink(Component):
             href += "@%s" % data['rev']
         return tag.a('Wiki Link (to copy)', href="source:%s" % href)
 
-class SendResourceLink(Component):
-    """Generate "Share file" menu item"""
-    implements(ISourceBrowserContextMenuProvider)
-    def get_order(self, req):
-        return 10
-
-    def get_draw_separator(self, req):
-        return False
-    
-    # IContextMenuProvider methods
-    def get_content(self, req, entry, stream, data):
-        if not entry.isdir:
-            return tag.a(_('Share file'), href=req.href.share(entry.path) + 'FIXME')
+#class SendResourceLink(Component):
+#    """Generate "Share file" menu item"""
+#    implements(ISourceBrowserContextMenuProvider)
+#    def get_order(self, req):
+#        return 10
+#
+#    def get_draw_separator(self, req):
+#        return False
+#    
+#    # IContextMenuProvider methods
+#    def get_content(self, req, entry, stream, data):
+#        if not entry.isdir:
+#            return tag.a(_('Share file'), href=req.href.share(entry.path) + 'FIXME')
 
   
 class SourceBrowserContextMenu(Component):
