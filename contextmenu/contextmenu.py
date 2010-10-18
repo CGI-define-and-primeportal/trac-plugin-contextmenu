@@ -38,13 +38,13 @@ from trac.core import Component, ExtensionPoint, implements
 from trac.web.api import ITemplateStreamFilter
 from api import ISourceBrowserContextMenuProvider
 from genshi.filters.transform import Transformer
-from genshi.core import Markup
+from genshi.core import Markup, START, END, TEXT, QName, Attrs, _ensure
 from trac.config import Option
 from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript
 from trac.util.translation import _
 from pkg_resources import resource_filename
 import os
-
+import uuid
 
 class InternalNameHolder(Component):
     """ This component holds a reference to the file on this row
@@ -134,6 +134,82 @@ class WikiToBrowserLink(Component):
 #        if not entry.isdir:
 #            return tag.a(_('Share file'), href=req.href.share(entry.path) + 'FIXME')
 
+class ContextMenuTransformation(object):
+    def __init__(self, req, data, context_menu_providers, main_subversion_link=None):
+        self.req = req
+        self.data = data
+        self.context_menu_providers = context_menu_providers
+        self.main_subversion_link = main_subversion_link
+
+    def __call__(self, stream):
+        """Apply the transform filter to the marked stream.
+
+        :param stream: The marked event stream to filter
+        """
+        in_content = False # not strictly, as we don't check for leaving the content div
+        found_first_th = False
+        if self.data['xhr']:
+            in_dirlist = True # XHR rows are only the interesting table
+        else:
+            in_dirlist = False
+
+        idx = 0
+        rows_seen = 0
+        
+        for kind, data, pos in stream:
+            if kind == START:
+                #print kind, data, pos
+                if self.main_subversion_link and \
+                       data[0] == QName("http://www.w3.org/1999/xhtml}div") and \
+                       data[1].get('id') == 'content':
+                    in_content = True
+                if data[0] == QName("http://www.w3.org/1999/xhtml}table") and \
+                       data[1].get('id') == 'dirlist' and self.data['dir']:
+                    in_dirlist = True
+                if in_dirlist and not found_first_th and data[0] == QName("http://www.w3.org/1999/xhtml}th"):
+                    for event in _ensure(tag.th()):
+                        yield event
+                    found_first_th = True
+                    yield kind, data, pos
+                    continue
+                if in_dirlist and data[0] == QName("http://www.w3.org/1999/xhtml}td"):
+                    rows_seen = rows_seen + 1
+                    if 'up' in self.data['chrome']['links'] and rows_seen == 1:
+                        data = data[0], data[1] - 'colspan' | [(QName('colspan'), '7')]
+                        yield kind, data, pos
+                        continue # don't mess with the "parent link" row
+                    if data[1].get('class') == 'name':
+                        uid = uuid.uuid4() # would be nice to get this
+                                           # static for any particular
+                                           # item. We can't use a
+                                           # simple offset count due
+                                           # to the XHR requests
+                        for event in _ensure(tag.td(tag.input(type='checkbox',
+                                                              id="cb-%s" % uid,
+                                                              class_='fileselect'))):
+                            yield event
+                        yield kind, data, pos
+                        menu = tag.div(tag.span(Markup('&#9662;'),style="color: #bbb"),
+                                       tag.div(class_="ctx-foldable", style="display:none"),
+                                       id="ctx-%s" % uid, class_="context-menu")
+                        for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
+                            entry   = self.data['dir']['entries'][idx]
+                            content = provider.get_content(self.req, entry, self.data)
+                            if content:
+                                menu.children[1].append(tag.div(content))
+                        
+                        for event in _ensure(menu):
+                            yield event
+                        idx = idx + 1
+                        continue
+            if kind == END:
+                if self.main_subversion_link and in_content and data == QName('http://www.w3.org/1999/xhtml}h1'):
+                    yield kind, data, pos
+                    for event in _ensure(self.main_subversion_link):
+                        yield event
+                    self.main_subversion_link = None # don't need to look for where to insert this now we've done it
+                    continue
+            yield kind, data, pos
   
 class SourceBrowserContextMenu(Component):
     """Component for adding a context menu to each item in the trac browser
@@ -152,48 +228,15 @@ class SourceBrowserContextMenu(Component):
                 return stream
             # provide a link to the svn repository at the top of the Browse Source listing
             if self.env.is_component_enabled("contextmenu.contextmenu.SubversionLink"):
-                content = SubversionLink(self.env).get_content(req, data['path'], stream, data)
-                if content:
-                    stream |= Transformer("//div[@id='content']/h1").after(content)
-            # No dir entries; we're showing a file
-            if not data['dir']:
-                return stream
-            # FIXME: The idx is only good for finding rows, not generating element ids.
-            # Xhr rows are only using dir_entries.html, not browser.html.
-            # The xhr-added rows' ids are added using js (see expand_dir.js)
-            idx = 0
+                main_subversion_link = SubversionLink(self.env).get_content(req, data['path'], data)
+            else:
+                main_subversion_link = None
             add_stylesheet(req, 'contextmenu/contextmenu.css')
             add_javascript(req, 'contextmenu/contextmenu.js')
-            if 'up' in data['chrome']['links']:
-                # Start appending stuff on 2nd tbody row when we have a parent dir link
-                row_index = 2
-                # Remove colspan and insert an empty cell for checkbox column
-                stream |= Transformer('//table[@id="dirlist"]//td[@colspan="5"]').attr('colspan', None).before(tag.td())
-            else:
-                # First row = //tr[1]
-                row_index = 1
-            for entry in data['dir']['entries']:
-                menu = tag.div(tag.span(Markup('&#9662;'),style="color: #bbb"),
-                               tag.div(class_="ctx-foldable", style="display:none"),
-                               id="ctx%s" % idx, class_="context-menu")
-                for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(req)):
-                    content = provider.get_content(req, entry, stream, data)
-                    if content:
-                        menu.children[1].append(tag.div(content))
-                ## XHR rows don't have a tbody in the stream
-                if data['xhr']:
-                    path_prefix = ''
-                else:
-                    path_prefix = '//table[@id="dirlist"]//tbody'
-                # Add the menu
-                stream |= Transformer('%s//tr[%d]//td[@class="name"]' % (path_prefix, idx + row_index)).prepend(menu)
-                if provider.get_draw_separator(req):
-                    menu.children[1].append(tag.div(class_="separator"))
-                # Add td+checkbox
-                cb = tag.td(tag.input(type='checkbox', id="cb%s" % idx, class_='fileselect'))
-                stream |= Transformer('%s//tr[%d]//td[@class="name"]' % (path_prefix, idx + row_index)).before(cb)
-                idx += 1
-            stream |= Transformer('//th[1]').before(tag.th())
+            stream |= ContextMenuTransformation(req,
+                                                data,
+                                                self.context_menu_providers,
+                                                main_subversion_link=main_subversion_link)
         return stream
     
     # ITemplateProvider methods
