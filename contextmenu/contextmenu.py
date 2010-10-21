@@ -37,8 +37,7 @@ from genshi.builder import tag
 from trac.core import Component, ExtensionPoint, implements
 from trac.web.api import ITemplateStreamFilter
 from api import ISourceBrowserContextMenuProvider
-from genshi.filters.transform import Transformer
-from genshi.core import Markup, START, END, TEXT, QName, Attrs, _ensure
+from genshi.core import Markup, START, END, QName, _ensure
 from trac.config import Option
 from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript
 from trac.util.translation import _
@@ -159,14 +158,15 @@ class ContextMenuTransformation(object):
         for kind, data, pos in stream:
             if kind == START:
                 #print kind, data, pos
-                if self.main_subversion_link and \
-                       data[0] == QName("http://www.w3.org/1999/xhtml}div") and \
-                       data[1].get('id') == 'content':
+                if all((self.main_subversion_link, 
+                        data[0] == QName("http://www.w3.org/1999/xhtml}div"),
+                        data[1].get('id') == 'content')):
                     in_content = True
-                if data[0] == QName("http://www.w3.org/1999/xhtml}table") and \
-                       data[1].get('id') == 'dirlist' and self.data['dir']:
+                if all((data[0] == QName("http://www.w3.org/1999/xhtml}table"),
+                        data[1].get('id') == 'dirlist', self.data['dir'])):
                     in_dirlist = True
-                if in_dirlist and not found_first_th and data[0] == QName("http://www.w3.org/1999/xhtml}th"):
+                if all((in_dirlist, not found_first_th,
+                        data[0] == QName("http://www.w3.org/1999/xhtml}th"))):
                     for event in _ensure(tag.th()):
                         yield event
                     found_first_th = True
@@ -179,17 +179,16 @@ class ContextMenuTransformation(object):
                         yield kind, data, pos
                         continue # don't mess with the "parent link" row
                     if data[1].get('class') == 'name':
-                        uid = uuid.uuid4() # would be nice to get this
-                                           # static for any particular
-                                           # item. We can't use a
-                                           # simple offset count due
-                                           # to the XHR requests
+                        # would be nice to get this static for any particular
+                        # item. We can't use a simple offset count due
+                        # to the XHR requests
+                        uid = uuid.uuid4()
                         for event in _ensure(tag.td(tag.input(type='checkbox',
                                                               id="cb-%s" % uid,
                                                               class_='fileselect'))):
                             yield event
                         yield kind, data, pos
-                        menu = tag.div(tag.span(Markup('&#9662;'),style="color: #bbb"),
+                        menu = tag.div(tag.span(Markup('&#9662;'), style="color: #bbb"),
                                        tag.div(class_="ctx-foldable", style="display:none"),
                                        id="ctx-%s" % uid, class_="context-menu")
                         for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
@@ -197,13 +196,13 @@ class ContextMenuTransformation(object):
                             content = provider.get_content(self.req, entry, self.data)
                             if content:
                                 menu.children[1].append(tag.div(content))
-                        
                         for event in _ensure(menu):
                             yield event
                         idx = idx + 1
                         continue
             if kind == END:
-                if self.main_subversion_link and in_content and data == QName('http://www.w3.org/1999/xhtml}h1'):
+                if all((self.main_subversion_link, in_content, 
+                        data == QName('http://www.w3.org/1999/xhtml}h1'))):
                     yield kind, data, pos
                     for event in _ensure(self.main_subversion_link):
                         yield event
