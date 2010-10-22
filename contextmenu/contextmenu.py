@@ -133,6 +133,17 @@ class WikiToBrowserLink(Component):
 #        if not entry.isdir:
 #            return tag.a(_('Share file'), href=req.href.share(entry.path) + 'FIXME')
 
+try:
+    # FIXME: remove when we drop python 2.4 support
+    all = all
+except NameError:
+    # python 2.4
+    def all(items):
+        for item in items:
+            if not bool(item):
+                return False
+        return True
+
 class ContextMenuTransformation(object):
     def __init__(self, req, data, context_menu_providers, main_subversion_link=None):
         self.req = req
