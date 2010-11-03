@@ -178,7 +178,7 @@ class ContextMenuTransformation(object):
                     in_dirlist = True
                 if all((in_dirlist, not found_first_th,
                         data[0] == QName("http://www.w3.org/1999/xhtml}th"))):
-                    for event in _ensure(tag.th()):
+                    for event in _ensure(tag.th(Markup('&nbsp;'))):
                         yield event
                     found_first_th = True
                     yield kind, data, pos
