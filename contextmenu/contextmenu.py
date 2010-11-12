@@ -40,6 +40,7 @@ from api import ISourceBrowserContextMenuProvider
 from genshi.core import Markup, START, END, QName, _ensure
 from trac.config import Option
 from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript
+from trac.util.compat import all
 from trac.util.translation import _
 from pkg_resources import resource_filename
 import os
@@ -89,7 +90,8 @@ class SubversionLink(Component):
         href = self.svn_base_url.rstrip('/')
         if data['reponame']:
             href += '/' + data['reponame']
-        href += '/' + path
+        if path != '/':
+            href += '/' + path
         return tag.a('Subversion', href=href)
 
 class WikiToBrowserLink(Component):
@@ -133,16 +135,6 @@ class WikiToBrowserLink(Component):
 #        if not entry.isdir:
 #            return tag.a(_('Share file'), href=req.href.share(entry.path) + 'FIXME')
 
-try:
-    # FIXME: remove when we drop python 2.4 support
-    all = all
-except NameError:
-    # python 2.4
-    def all(items):
-        for item in items:
-            if not bool(item):
-                return False
-        return True
 
 class ContextMenuTransformation(object):
     def __init__(self, req, data, context_menu_providers, main_subversion_link=None):
