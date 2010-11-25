@@ -39,7 +39,7 @@ from trac.web.api import ITemplateStreamFilter
 from api import ISourceBrowserContextMenuProvider
 from genshi.core import Markup, START, END, QName, _ensure
 from trac.config import Option
-from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript
+from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript, add_ctxtnav
 from trac.util.translation import _
 from pkg_resources import resource_filename
 import os
@@ -89,7 +89,8 @@ class SubversionLink(Component):
         href = self.svn_base_url.rstrip('/')
         if data['reponame']:
             href += '/' + data['reponame']
-        href += '/' + path
+        if path != '/':
+            href += '/' + path
         return tag.a('Subversion', href=href)
 
 class WikiToBrowserLink(Component):
@@ -145,18 +146,16 @@ except NameError:
         return True
 
 class ContextMenuTransformation(object):
-    def __init__(self, req, data, context_menu_providers, main_subversion_link=None):
+    def __init__(self, req, data, context_menu_providers):
         self.req = req
         self.data = data
         self.context_menu_providers = context_menu_providers
-        self.main_subversion_link = main_subversion_link
 
     def __call__(self, stream):
         """Apply the transform filter to the marked stream.
 
         :param stream: The marked event stream to filter
         """
-        in_content = False # not strictly, as we don't check for leaving the content div
         found_first_th = False
         if self.data['xhr']:
             in_dirlist = True # XHR rows are only the interesting table
@@ -168,11 +167,6 @@ class ContextMenuTransformation(object):
         
         for kind, data, pos in stream:
             if kind == START:
-                #print kind, data, pos
-                if all((self.main_subversion_link, 
-                        data[0] == QName("http://www.w3.org/1999/xhtml}div"),
-                        data[1].get('id') == 'content')):
-                    in_content = True
                 if all((data[0] == QName("http://www.w3.org/1999/xhtml}table"),
                         data[1].get('id') == 'dirlist', self.data['dir'])):
                     in_dirlist = True
@@ -211,14 +205,6 @@ class ContextMenuTransformation(object):
                             yield event
                         idx = idx + 1
                         continue
-            if kind == END:
-                if all((self.main_subversion_link, in_content, 
-                        data == QName('http://www.w3.org/1999/xhtml}h1'))):
-                    yield kind, data, pos
-                    for event in _ensure(self.main_subversion_link):
-                        yield event
-                    self.main_subversion_link = None # don't need to look for where to insert this now we've done it
-                    continue
             yield kind, data, pos
   
 class SourceBrowserContextMenu(Component):
@@ -238,15 +224,10 @@ class SourceBrowserContextMenu(Component):
                 return stream
             # provide a link to the svn repository at the top of the Browse Source listing
             if self.env.is_component_enabled("contextmenu.contextmenu.SubversionLink"):
-                main_subversion_link = SubversionLink(self.env).get_content(req, data['path'], data)
-            else:
-                main_subversion_link = None
+                add_ctxtnav(req, SubversionLink(self.env).get_content(req, data['path'], data))
             add_stylesheet(req, 'contextmenu/contextmenu.css')
             add_javascript(req, 'contextmenu/contextmenu.js')
-            stream |= ContextMenuTransformation(req,
-                                                data,
-                                                self.context_menu_providers,
-                                                main_subversion_link=main_subversion_link)
+            stream |= ContextMenuTransformation(req, data, self.context_menu_providers)
         return stream
     
     # ITemplateProvider methods
