@@ -193,7 +193,7 @@ class ContextMenuTransformation(object):
                                                               class_='fileselect'))):
                             yield event
                         yield kind, data, pos
-                        menu = tag.div(tag.span(Markup('&#9662;'), style="color: #bbb"),
+                        menu = tag.div(tag.span(Markup('&#9662;'), style="color: #555"),
                                        tag.div(class_="ctx-foldable", style="display:none"),
                                        id="ctx-%s" % uid, class_="context-menu")
                         for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
