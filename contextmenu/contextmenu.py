@@ -91,7 +91,7 @@ class SubversionLink(Component):
             href += '/' + data['reponame']
         if path != '/':
             href += '/' + path
-        return tag.a('Subversion', href=href)
+        return tag.a(_('Subversion URL'), href=href)
 
 class WikiToBrowserLink(Component):
     """Generate wiki link"""
@@ -224,7 +224,7 @@ class SourceBrowserContextMenu(Component):
                 return stream
             # provide a link to the svn repository at the top of the Browse Source listing
             if self.env.is_component_enabled("contextmenu.contextmenu.SubversionLink"):
-                add_ctxtnav(req, SubversionLink(self.env).get_content(req, data['path'], data))
+                add_ctxtnav(req, SubversionLink(self.env).get_content(req, data['path'], data), category='ctxtnav-list')
             add_stylesheet(req, 'contextmenu/contextmenu.css')
             add_javascript(req, 'contextmenu/contextmenu.js')
             stream |= ContextMenuTransformation(req, data, self.context_menu_providers)
