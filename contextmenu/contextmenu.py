@@ -40,6 +40,7 @@ from api import ISourceBrowserContextMenuProvider
 from genshi.core import Markup, START, END, QName, _ensure
 from trac.config import Option
 from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript, add_ctxtnav
+from trac.util.compat import all
 from trac.util.translation import _
 from pkg_resources import resource_filename
 import os
@@ -120,30 +121,6 @@ class WikiToBrowserLink(Component):
             href += "@%s" % data['rev']
         return tag.a('Wiki Link (to copy)', href="source:%s" % href)
 
-#class SendResourceLink(Component):
-#    """Generate "Share file" menu item"""
-#    implements(ISourceBrowserContextMenuProvider)
-#    def get_order(self, req):
-#        return 10
-#
-#    def get_draw_separator(self, req):
-#        return False
-#    
-#    # IContextMenuProvider methods
-#    def get_content(self, req, entry, data):
-#        if not entry.isdir:
-#            return tag.a(_('Share file'), href=req.href.share(entry.path) + 'FIXME')
-
-try:
-    # FIXME: remove when we drop python 2.4 support
-    all = all
-except NameError:
-    # python 2.4
-    def all(items):
-        for item in items:
-            if not bool(item):
-                return False
-        return True
 
 class ContextMenuTransformation(object):
     def __init__(self, req, data, context_menu_providers):
@@ -161,15 +138,17 @@ class ContextMenuTransformation(object):
             in_dirlist = True # XHR rows are only the interesting table
         else:
             in_dirlist = False
-
+        in_repoindex = False
         idx = 0
         rows_seen = 0
         
         for kind, data, pos in stream:
             if kind == START:
                 if all((data[0] == QName("http://www.w3.org/1999/xhtml}table"),
-                        data[1].get('id') == 'dirlist', self.data['dir'])):
+                        data[1].get('id') in ('dirlist', 'repoindex'),
+                        self.data['dir'])):
                     in_dirlist = True
+                    in_repoindex = data[1].get('id') == 'repoindex'
                 if all((in_dirlist, not found_first_th,
                         data[0] == QName("http://www.w3.org/1999/xhtml}th"))):
                     for event in _ensure(tag.th(Markup('&nbsp;'))):
@@ -193,11 +172,14 @@ class ContextMenuTransformation(object):
                                                               class_='fileselect'))):
                             yield event
                         yield kind, data, pos
+                        if idx == 0 and in_repoindex:
+                            # Don't yield a context menu for the repos since they don't have a dir entry
+                            continue
                         menu = tag.div(tag.span(Markup('&#9662;'), style="color: #555"),
                                        tag.div(class_="ctx-foldable", style="display:none"),
                                        id="ctx-%s" % uid, class_="context-menu")
                         for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
-                            entry   = self.data['dir']['entries'][idx]
+                            entry = self.data['dir']['entries'][idx]
                             content = provider.get_content(self.req, entry, self.data)
                             if content:
                                 menu.children[1].append(tag.div(content))
@@ -205,6 +187,12 @@ class ContextMenuTransformation(object):
                             yield event
                         idx = idx + 1
                         continue
+            elif all((in_dirlist, kind == END, data == QName("http://www.w3.org/1999/xhtml}table"))):
+                # we're leaving the current table; reset markers 
+                in_dirlist = False
+                rows_seen = 0
+                found_first_th = False
+                idx = 0
             yield kind, data, pos
   
 class SourceBrowserContextMenu(Component):
