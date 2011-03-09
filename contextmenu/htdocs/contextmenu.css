@@ -1,20 +1,20 @@
 /* overwrite padding-left rules from browser.css */
-div.context-menu div a {
+.context-menu div a {
   padding-left: 0 !important;
 }
-div.context-menu {
- float: right;
+.context-menu {
+ float: left;
 }
-div.context-menu span {
+.ctx-expander {
   display: block;
   cursor: pointer;
   padding: 0 10px;
 }
-
-div.ctx-foldable {
+.ctx-foldable {
   background: #FFF;
-  }
-div.context-menu > div {
+  display: none;
+}
+.context-menu > div {
   width: 200px;
   margin: 0;
   padding: 1ex;
@@ -24,14 +24,17 @@ div.context-menu > div {
   border-top: none;
   white-space: nowrap !important;
 }
-div.context-menu > div > div > a {
+.context-menu > div > div > a {
   display: block;
 }
-div.context-menu > div a:hover {
+.context-menu > div a:hover {
   background-color: #eee !important;
 }
-div.context-menu .separator {
+.context-menu .separator {
   padding-top: .5ex;
   margin-bottom: .5ex;
   border-bottom: 1px inset #555;
+}
+#dirlist td.name > *, #repoindex td.name > * {
+  float: left;
 }

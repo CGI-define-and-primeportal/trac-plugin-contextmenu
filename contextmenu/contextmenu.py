@@ -138,7 +138,7 @@ class ContextMenuTransformation(object):
             in_dirlist = True # XHR rows are only the interesting table
         else:
             in_dirlist = False
-        in_repoindex = False
+        in_repoindex = in_name_td = False
         idx = 0
         rows_seen = 0
         
@@ -171,30 +171,35 @@ class ContextMenuTransformation(object):
                                                               id="cb-%s" % uid,
                                                               class_='fileselect'))):
                             yield event
-                        yield kind, data, pos
-                        if idx == 0 and in_repoindex:
-                            # Don't yield a context menu for the repos since they don't have a dir entry
-                            continue
-                        menu = tag.div(tag.span(Markup('&#9662;'), style="color: #555"),
-                                       tag.div(class_="ctx-foldable", style="display:none"),
-                                       id="ctx-%s" % uid, class_="context-menu")
-                        for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
-                            entry = self.data['dir']['entries'][idx]
-                            content = provider.get_content(self.req, entry, self.data)
-                            if content:
-                                menu.children[1].append(tag.div(content))
-                        for event in _ensure(menu):
-                            yield event
-                        idx = idx + 1
-                        continue
-            elif all((in_dirlist, kind == END, data == QName("http://www.w3.org/1999/xhtml}table"))):
+                        in_name_td = True
+            elif in_dirlist and kind == END and data == QName("http://www.w3.org/1999/xhtml}table"):
                 # we're leaving the current table; reset markers 
                 in_dirlist = False
                 rows_seen = 0
                 found_first_th = False
                 idx = 0
+            elif in_name_td and kind == END:
+                if data == QName("http://www.w3.org/1999/xhtml}td"):
+                    in_name_td = False
+                elif data == QName("http://www.w3.org/1999/xhtml}a"):
+                    yield kind, data, pos
+                    if idx == 0 and in_repoindex:
+                        # Don't yield a context menu for the repos since they don't have a dir entry
+                        continue
+                    menu = tag.div(tag.span(Markup('&#9662;'), class_="ctx-expander"),
+                                   tag.div(class_="ctx-foldable"),
+                                   id="ctx-%s" % uid, class_="context-menu")
+                    for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
+                        entry = self.data['dir']['entries'][idx]
+                        content = provider.get_content(self.req, entry, self.data)
+                        if content:
+                            menu.children[1].append(tag.div(content))
+                    for event in _ensure(menu):
+                        yield event
+                    idx = idx + 1
+                    continue
             yield kind, data, pos
-  
+
 class SourceBrowserContextMenu(Component):
     """Component for adding a context menu to each item in the trac browser
     file-list
