@@ -5,10 +5,12 @@
 .context-menu {
  float: left;
 }
-.ctx-expander {
+#dirlist .ctx-expander {
   display: block;
   cursor: pointer;
   padding: 0 10px;
+  color: transparent;
+  background: url("ctxt-arrowdown.png") no-repeat 6px 2px;
 }
 .ctx-foldable {
   background: #FFF;
