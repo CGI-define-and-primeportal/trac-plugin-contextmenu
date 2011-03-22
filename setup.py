@@ -41,7 +41,8 @@ setup(
     url = "http://trac-hacks.org/wiki/ContextMenuPlugin",
     packages = ['contextmenu'],
     package_data = {'contextmenu' : ['htdocs/*.js',
-                                           'htdocs/*.css']}, 
+                                     'htdocs/*.css',
+                                     'htdocs/*.png']}, 
     install_requires = [
     ],
     tests_require = ['nose'],
