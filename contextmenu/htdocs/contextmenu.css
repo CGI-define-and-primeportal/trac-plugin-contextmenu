@@ -10,7 +10,7 @@
   cursor: pointer;
   padding: 0 10px;
   color: transparent;
-  background: url("ctxt-arrowdown.png") no-repeat 6px 2px;
+  background: url("ctxt-arrowdown.png") no-repeat 6px 6px;
 }
 .ctx-foldable {
   background: #FFF;
