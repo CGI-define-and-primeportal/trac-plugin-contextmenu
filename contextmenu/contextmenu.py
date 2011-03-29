@@ -92,7 +92,7 @@ class SubversionLink(Component):
             href += '/' + data['reponame']
         if path != '/':
             href += '/' + path
-        return tag.a(_('Subversion URL'), href=href)
+        return tag.a(_('Subversion URL'), href=href, class_='external svn')
 
 class WikiToBrowserLink(Component):
     """Generate wiki link"""
