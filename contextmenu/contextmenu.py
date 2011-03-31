@@ -186,8 +186,8 @@ class ContextMenuTransformation(object):
                     if idx == 0 and in_repoindex:
                         # Don't yield a context menu for the repos since they don't have a dir entry
                         continue
-                    menu = tag.div(tag.span(Markup('&nbsp;'), class_="ctx-expander"),
-                                   tag.div(class_="ctx-foldable"),
+                    menu = tag.div(tag.a(Markup('&nbsp;'), class_="ctx-expander"),
+                                   tag.div(class_="ctx-foldable"), tabindex="50",
                                    id="ctx-%s" % uid, class_="context-menu")
                     for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
                         entry = self.data['dir']['entries'][idx]
