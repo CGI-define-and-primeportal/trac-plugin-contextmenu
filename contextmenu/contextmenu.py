@@ -119,7 +119,7 @@ class WikiToBrowserLink(Component):
         href += '/' + path
         if data.has_key('rev'):
             href += "@%s" % data['rev']
-        return tag.a('Wiki Link (to copy)', href="source:%s" % href)
+        return tag.a('Wiki Link (to copy)', href='source:"%s"' % href)
 
 
 class ContextMenuTransformation(object):
