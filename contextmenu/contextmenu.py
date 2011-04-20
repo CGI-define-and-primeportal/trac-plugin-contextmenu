@@ -130,14 +130,11 @@ class ContextMenuTransformation(object):
                     continue
                 if in_dirlist and data[0] == QName("http://www.w3.org/1999/xhtml}td"):
                     rows_seen = rows_seen + 1
-                    if 'up' in self.data['chrome']['links'] and rows_seen == 1:
+                    if  rows_seen == 1 and ('up' in self.data['chrome']['links'] or \
+                                            (self.data['dir'] and not self.data['dir']['entries'])):
                         data = data[0], data[1] - 'colspan' | [(QName('colspan'), '7')]
                         yield kind, data, pos
-                        continue # don't mess with the "parent link" row
-                    if 'up' not in self.data['chrome']['links'] and self.data.get('dir') and not self.data['dir']['entries']:
-                        data = data[0], data[1] - 'colspan' | [(QName('colspan'), '7')]
-                        yield kind, data, pos
-                        continue # don't mess with the "No files found" row
+                        continue # don't mess with the "parent link" and "No files found" row
                     if data[1].get('class') == 'name':
                         # would be nice to get this static for any particular
                         # item. We can't use a simple offset count due
