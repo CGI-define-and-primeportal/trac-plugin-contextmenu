@@ -19,7 +19,7 @@ jQuery(function($){
         var top = row.position().top + row.outerHeight() - 1 + scrollTop
         var left = holder.position().left
         var bgColor = row.css('background-color')
-        menu.css({top: top,
+        menu.css({top: top, width:'auto',
                   left: left,
                   backgroundColor: bgColor}).show()
       }
