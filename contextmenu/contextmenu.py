@@ -71,7 +71,7 @@ class SubversionLink(Component):
 
     # IContextMenuProvider methods
     def get_order(self, req):
-        return 1
+        return 6
 
     def get_draw_separator(self, req):
         return True
