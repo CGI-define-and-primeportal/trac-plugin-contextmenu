@@ -7,7 +7,6 @@ jQuery(function($){
         menu.fadeOut('fast')
       } else {
         var row = holder.closest('tr')
-        // Add scrolltop if we're in a scrolling div
         var top = row.position().top + row.outerHeight() - 1
         var left = holder.position().left
         var bgColor = row.css('background-color')
