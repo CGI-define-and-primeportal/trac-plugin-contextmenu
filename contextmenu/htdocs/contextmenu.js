@@ -6,13 +6,7 @@ jQuery(function($){
       if (menu.is(':visible')) {
         menu.fadeOut('fast')
       } else {
-        var row = holder.closest('tr')
-        var top = row.position().top + row.outerHeight() - 1
-        var left = holder.position().left
-        var bgColor = row.css('background-color')
-        menu.css({top: top, width:'auto',
-                  left: left,
-                  backgroundColor: bgColor}).show()
+        menu.css({backgroundColor: holder.closest('tr').css('background-color')}).show()
       }
     } else { // blur
       menu.fadeOut('fast')
