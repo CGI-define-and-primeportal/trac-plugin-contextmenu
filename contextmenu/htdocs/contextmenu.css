@@ -3,7 +3,8 @@
   padding-left: 0 !important;
 }
 .context-menu {
- float: left;
+  float: left;
+  position:relative;
 }
 #dirlist .ctx-expander {
   display: block;
@@ -13,7 +14,6 @@
   background: url("ctxt-arrowdown.png") no-repeat 6px 6px;
 }
 .ctx-foldable {
-  background: #FFF;
   display: none;
 }
 .context-menu > div {
@@ -21,10 +21,12 @@
   margin: 0;
   padding: 1ex;
   position: absolute;
-  background-color: white;
+  background-color: #fff;
   border: 1px solid #ddd;
   border-top: none;
   white-space: nowrap !important;
+  top:18px;
+  z-index:90;
 }
 .context-menu > div > div > a {
   display: block;
