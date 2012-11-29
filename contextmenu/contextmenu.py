@@ -92,7 +92,7 @@ class SubversionLink(Component):
             href += '/' + data['reponame']
         if path != '/':
             href += '/' + path
-        return tag.a(_('Subversion URL'), href=href, class_='external svn')
+        return tag.a(_(tag.i(class_="icon-globe icon-blue")),' Subversion URL', href=href, class_='external svn')
 
 class ContextMenuTransformation(object):
     def __init__(self, req, data, context_menu_providers):
