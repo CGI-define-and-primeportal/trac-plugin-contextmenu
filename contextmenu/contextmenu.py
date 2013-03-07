@@ -92,7 +92,7 @@ class SubversionLink(Component):
             href += '/' + data['reponame']
         if path != '/':
             href += '/' + path
-        return tag.a(_(tag.i(class_="icon-globe icon-blue")),' Subversion URL', href=href, class_='external svn')
+        return tag.a(_(tag.i(class_="icon-globe")),' Subversion URL', href=href, class_='external svn')
 
 class ContextMenuTransformation(object):
     def __init__(self, req, data, context_menu_providers):
@@ -159,7 +159,7 @@ class ContextMenuTransformation(object):
                     if idx == 0 and in_repoindex:
                         # Don't yield a context menu for the repos since they don't have a dir entry
                         continue
-                    menu = tag.div(tag.a(Markup('&nbsp;'), class_="ctx-expander"),
+                    menu = tag.div(tag.a(class_="ctx-expander icon-angle-down"),
                                    tag.div(class_="ctx-foldable"), tabindex="50",
                                    id="ctx-%s" % uid, class_="context-menu")
                     for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):

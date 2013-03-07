@@ -6,7 +6,7 @@ jQuery(function($){
       if (menu.is(':visible')) {
         menu.fadeOut('fast')
       } else {
-        menu.css({backgroundColor: holder.closest('tr').css('background-color')}).show()
+        menu.fadeIn('fast');
       }
     } else { // blur
       menu.fadeOut('fast')

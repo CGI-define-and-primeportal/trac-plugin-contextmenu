@@ -2,17 +2,12 @@
 .context-menu div a {
   padding-left: 0 !important;
 }
-.context-menu {
-  float: left;
-  position:relative;
-}
+.context-menu { position:relative; }
 #dirlist .ctx-expander {
-  display: block;
+  margin-left:5px;
   cursor: pointer;
-  padding: 0 10px;
-  color: transparent;
-  background: url("ctxt-arrowdown.png") no-repeat 6px 6px;
 }
+#dirlist .ctx-expander:hover { text-decoration: none; }
 .ctx-foldable {
   display: none;
 }
@@ -21,7 +16,7 @@
   margin: 0;
   padding: 1ex;
   position: absolute;
-  background-color: #fff;
+  background:#FFF;
   border: 1px solid #ddd;
   border-top: none;
   white-space: nowrap !important;
@@ -39,6 +34,5 @@
   margin-bottom: .5ex;
   border-bottom: 1px inset #555;
 }
-#dirlist td.name > *, #repoindex td.name > * {
-  float: left;
+#dirlist td.name > *, #repoindex td.name > * { display:inline-block; }
 }
