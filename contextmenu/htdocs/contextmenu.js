@@ -1,5 +1,5 @@
 jQuery(function($){
-  $('div.context-menu').live('click blur', function(e) {
+  $("#dirlist tbody").on("click blur", ".context-menu", function(e) {
     var holder = $(this)
     var menu = $('.ctx-foldable', holder)
     if (e.type == 'click') {
