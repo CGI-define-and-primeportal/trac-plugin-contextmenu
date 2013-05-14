@@ -1,0 +1,38 @@
+/* overwrite padding-left rules from browser.css */
+.context-menu div a {
+  padding-left: 0 !important;
+}
+.context-menu { position:relative; }
+#dirlist .ctx-expander {
+  margin-left:5px;
+  cursor: pointer;
+}
+#dirlist .ctx-expander:hover { text-decoration: none; }
+.ctx-foldable {
+  display: none;
+}
+.context-menu > div {
+  width: 200px;
+  margin: 0;
+  padding: 1ex;
+  position: absolute;
+  background:#FFF;
+  border: 1px solid #ddd;
+  border-top: none;
+  white-space: nowrap !important;
+  top:18px;
+  z-index:90;
+}
+.context-menu > div > div > a {
+  display: block;
+}
+.context-menu > div a:hover {
+  background-color: #eee !important;
+}
+.context-menu .separator {
+  padding-top: .5ex;
+  margin-bottom: .5ex;
+  border-bottom: 1px inset #555;
+}
+#dirlist td.name > *, #repoindex td.name > * { display:inline-block; }
+}
