@@ -2,7 +2,10 @@
 .context-menu div a {
   padding-left: 0 !important;
 }
-.context-menu { position:relative; }
+.context-menu { 
+  position:relative;
+  display: inline-block;
+}
 #dirlist .ctx-expander {
   margin-left:5px;
   cursor: pointer;
