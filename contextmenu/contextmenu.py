@@ -160,8 +160,13 @@ class ContextMenuTransformation(object):
                         # Don't yield a context menu for the repos since they don't have a dir entry
                         continue
                     menu = tag.div(tag.a(class_="ctx-expander icon-angle-down"),
-                                   tag.div(tag.ul(class_="styled-dropdown static"), class_="ctx-foldable hidden open dropdown-bottom-fix"), tabindex="50",
-                                   id="ctx-%s" % uid, class_="context-menu inline-block margin-left-small")
+                                   tag.div(
+                                       tag.ul(class_="styled-dropdown"), 
+                                       class_="bottom-fix"
+                                   ),
+                                   id="ctx-%s" % uid,
+                                   class_="inline-block margin-left-small dropdown-toggle")
+
                     for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
                         entry = self.data['dir']['entries'][idx]
                         content = provider.get_content(self.req, entry, self.data)
@@ -191,7 +196,6 @@ class SourceBrowserContextMenu(Component):
             # provide a link to the svn repository at the top of the Browse Source listing
             if self.env.is_component_enabled("contextmenu.contextmenu.SubversionLink"):
                 add_ctxtnav(req, SubversionLink(self.env).get_content(req, data['path'], data), category='ctxtnav-list')
-            add_javascript(req, 'contextmenu/contextmenu.js')
             stream |= ContextMenuTransformation(req, data, self.context_menu_providers)
         return stream
     
