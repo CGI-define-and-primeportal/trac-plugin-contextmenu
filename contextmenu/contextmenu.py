@@ -206,6 +206,10 @@ class SourceBrowserContextMenu(Component):
             if 'path' not in data:
                 # Probably an upstream error
                 return stream
+            if not is_subversion_repository(data.get('repos')):
+                #temporary control until we got something in place for non svn
+                #repos.
+                return stream
             # provide a link to the svn repository at the top of the Browse Source listing
             if self.env.is_component_enabled("contextmenu.contextmenu.SubversionLink"):
                 add_ctxtnav(req, SubversionLink(self.env).get_content(req, data['path'], data), category='ctxtnav-list')
