@@ -45,6 +45,14 @@ from trac.util.translation import _
 from pkg_resources import resource_filename
 import os
 import uuid
+from trac.versioncontrol.svn_fs import SvnCachedRepository, SubversionRepository
+
+def is_subversion_repository(repo):
+    ''' Checks if the repository is derived from SvnCachedRepository or 
+    SubversionRepository. '''
+    if isinstance(repo, (SvnCachedRepository, SubversionRepository)):
+        return True
+    return False
 
 class InternalNameHolder(Component):
     """ This component holds a reference to the file on this row
@@ -77,6 +85,10 @@ class SubversionLink(Component):
         return True
     
     def get_content(self, req, entry, data):
+        # Make sure that repository is a Subversion repository.
+        if not is_subversion_repository(data.get('repos')):
+            return None
+
         if self.env.is_component_enabled("svnurls.svnurls.svnurls"):
             # They are already providing links to subversion, so we won't duplicate them.
             return None
@@ -172,8 +184,9 @@ class ContextMenuTransformation(object):
                         content = provider.get_content(self.req, entry, self.data)
                         if content:
                             menu.children[1].children[0].append(tag.li(content))
-                    for event in _ensure(menu):
-                        yield event
+                    if len(menu.children[1].children[0].children) > 1:
+                        for event in _ensure(menu):
+                            yield event
                     idx = idx + 1
                     continue
             yield kind, data, pos
@@ -192,6 +205,10 @@ class SourceBrowserContextMenu(Component):
         if filename in ('browser.html', 'dir_entries.html'):
             if 'path' not in data:
                 # Probably an upstream error
+                return stream
+            if not is_subversion_repository(data.get('repos')):
+                #temporary control until we got something in place for non svn
+                #repos.
                 return stream
             # provide a link to the svn repository at the top of the Browse Source listing
             if self.env.is_component_enabled("contextmenu.contextmenu.SubversionLink"):
