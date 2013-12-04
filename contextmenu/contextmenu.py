@@ -129,7 +129,7 @@ class ContextMenuTransformation(object):
         for kind, data, pos in stream:
             if kind == START:
                 if all((data[0] == QName("http://www.w3.org/1999/xhtml}table"),
-                        data[1].get('id') in ('dirlist', 'repoindex'),
+                        data[1].get('id') == 'dirlist',
                         self.data['dir'])):
                     in_dirlist = True
                     in_repoindex = data[1].get('id') == 'repoindex'
