@@ -94,15 +94,16 @@ class SubversionLink(Component):
         if not is_subversion_repository(data.get('repos')):
             return None
 
+        if self.env.is_component_enabled("svnurls.svnurls.svnurls"):
+            # They are already providing links to subversion, so we won't duplicate them.
+            return None
+
         path = self.get_subversion_path(entry)
         href = self.get_subversion_href(data, path)
 
         return tag.a(_(tag.i(class_="icon-globe")),' Subversion URL', href=href, class_='external svn')
 
     def get_subversion_path(self, entry):
-        if self.env.is_component_enabled("svnurls.svnurls.svnurls"):
-            # They are already providing links to subversion, so we won't duplicate them.
-            return None
         if isinstance(entry, basestring):
             return entry
         else:
