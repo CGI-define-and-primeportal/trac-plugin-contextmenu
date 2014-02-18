@@ -41,8 +41,8 @@ from api import ISourceBrowserContextMenuProvider
 from genshi.core import Markup, START, END, QName, _ensure
 from trac.config import Option
 from trac.web import ITemplateStreamFilter
-from trac.web.chrome import add_stylesheet, ITemplateProvider, add_javascript, \
-                            add_ctxtnav, add_script, add_script_data
+from trac.web.chrome import (add_stylesheet, ITemplateProvider, add_javascript,
+                            add_ctxtnav, add_script, add_script_data)
 from trac.web.api import IRequestHandler, IRequestFilter
 from trac.util.compat import all
 from trac.util.translation import _
@@ -139,10 +139,6 @@ class TortoiseSvnLink(SubversionLink):
         if not is_subversion_repository(data.get('repos')):
             return None
 
-        if self.env.is_component_enabled("svnurls.svnurls.svnurls"):
-            # They are already providing links to subversion, so we won't duplicate them.
-            return None
-
         path = self.get_subversion_path(entry)
         href = self.get_subversion_href(data, path)
 
@@ -187,17 +183,17 @@ class TortoiseSvnLink(SubversionLink):
         stop showing the dialog box when this attribute is set. 
         """
 
-        if req.method == "POST" \
-          and req.get_header('X-Requested-With') == 'XMLHttpRequest' \
-          and req.args.get('tortoise-svn-message'):
+        if (req.method == "POST" and
+          req.get_header('X-Requested-With') == 'XMLHttpRequest' and
+          req.args.get('tortoise-svn-message')):
             req.session['tortoise_svn_message'] = True
             self.log.info("Set tortoise_svn_message session attribute "
                               "as True for %s", req.authname)
             req.session.save()
             req.send(to_json({"success":True}), 'text/json')
         else:
+            # if you try to access this page via GET we redirect
             req.redirect(req.href.browser())
-        return 'browser.html', {}, None
 
     # ITemplateProvider Methods
 
@@ -220,6 +216,11 @@ class TortoiseSvnLink(SubversionLink):
                               ),
                           ),
                           tag.p("If you have installed TortoiseSVN, please select continue.",
+                          ),
+                          tag.p("Please be aware that you may need to configure your proxy "
+                                "before using TortoiseSVN. Also note that this message will "
+                                "not appear again if you click continue.",
+                            class_="info-light"
                           ),
                       )
             form =  tag.form(

@@ -42,7 +42,8 @@ setup(
     packages = ['contextmenu'],
     package_data = {'contextmenu' : ['htdocs/*.js',
                                      'htdocs/*.css',
-                                     'htdocs/*.png']}, 
+                                     'htdocs/*.png',
+                                     'htdocs/js/*.js',]}, 
     install_requires = [
     ],
     tests_require = ['nose'],
