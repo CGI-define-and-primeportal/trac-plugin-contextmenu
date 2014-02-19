@@ -217,9 +217,14 @@ class TortoiseSvnLink(SubversionLink):
                           ),
                           tag.p("If you have installed TortoiseSVN, please select continue.",
                           ),
-                          tag.p("Please be aware that you may need to configure your proxy "
-                                "before using TortoiseSVN. Also note that this message will "
-                                "not appear again if you click continue.",
+                          tag.p("If your local network requires a proxy to access the Internet, note that ",
+                                tag.a("TortoiseSVN has proxy settings ",
+                                    href="http://tortoisesvn.net/docs/nightly/TortoiseSVN_en/tsvn-dug-settings.html#tsvn-dug-settings-network"
+                                ),
+                                "which are configured separately to your normal Windows browser proxy.",
+                            class_="info-light"
+                          ),
+                          tag.p("This message will not appear again if you click continue.",
                             class_="info-light"
                           ),
                       )
