@@ -357,8 +357,8 @@ class SourceBrowserContextMenu(Component):
                 return stream
             # provide a link to the svn repository at the top of the Browse Source listing
             if self.env.is_component_enabled("contextmenu.contextmenu.SubversionLink"):
-                add_ctxtnav(req, SubversionLink(self.env).get_content(req, data['path'], data), category='ctxtnav-list')
-                add_ctxtnav(req, TortoiseSvnLink(self.env).get_content(req, data['path'], data), category='ctxtnav-list')
+                add_ctxtnav(req, SubversionLink(self.env).get_content(req, data['path'], data))
+                add_ctxtnav(req, TortoiseSvnLink(self.env).get_content(req, data['path'], data))
             stream |= ContextMenuTransformation(req, data, self.context_menu_providers)
         return stream
     
