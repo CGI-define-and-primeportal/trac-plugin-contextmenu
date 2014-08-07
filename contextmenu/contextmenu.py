@@ -81,6 +81,7 @@ class SubversionLink(Component):
     implements(ISourceBrowserContextMenuProvider)
 
     svn_base_url = Option('svn', 'repository_url')
+    default_repo_alias = Option('repositories', '.alias')
 
     # IContextMenuProvider methods
     def get_order(self, req):
@@ -114,7 +115,7 @@ class SubversionLink(Component):
 
     def get_subversion_href(self, data, path):
         href = self.svn_base_url.rstrip('/')
-        if data['reponame']:
+        if data['reponame'] and data['reponame'] != self.default_repo_alias:
             href += '/' + data['reponame']
         if path != '/':
             href += '/' + path
