@@ -115,6 +115,11 @@ class SubversionLink(Component):
 
     def get_subversion_href(self, data, path):
         href = self.svn_base_url.rstrip('/')
+        # The second part of this condition excludes the default svn repo alias 
+        # from the Subversion URL. This will no longer be needed once we support
+        # multiple named svn repositories and should be removed as part of #4755.
+        # TODO: Remove "and data['reponame'] != self.default_repo_alias" as part
+        # of #4755.
         if data['reponame'] and data['reponame'] != self.default_repo_alias:
             href += '/' + data['reponame']
         if path != '/':
