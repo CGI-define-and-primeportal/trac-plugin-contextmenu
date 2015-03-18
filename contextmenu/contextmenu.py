@@ -101,7 +101,7 @@ class SubversionLink(Component):
         path = self.get_subversion_path(entry)
         href = self.get_subversion_href(data, path)
 
-        return tag.a(_(tag.i(class_="icon-globe")),' Subversion URL', href=href, class_='external svn')
+        return tag.a(_(tag.i(class_="fa fa-globe")),' Subversion URL', href=href, class_='external svn')
 
     def get_subversion_path(self, entry):
         if isinstance(entry, basestring):
@@ -144,7 +144,7 @@ class TortoiseSvnLink(SubversionLink):
 
         # create a url which uses the tsvncmd protocol and repobrowser
         tortoise_href = "tsvncmd:command:repobrowser?path:" + href
-        return tag.a(_(tag.i(class_="icon-code-fork")),' Browse With TortoiseSVN',
+        return tag.a(_(tag.i(class_="fa fa-code-fork")),' Browse With TortoiseSVN',
                                     href=tortoise_href, id_='browse-with-tortoise')
 
     # IRequestFilter Methods
@@ -316,7 +316,7 @@ class ContextMenuTransformation(object):
                     if idx == 0 and in_repoindex:
                         # Don't yield a context menu for the repos since they don't have a dir entry
                         continue
-                    menu = tag.div(tag.a(class_="ctx-expander icon-angle-down"),
+                    menu = tag.div(tag.a(class_="ctx-expander fa fa-angle-down"),
                                    tag.div(
                                        tag.ul(class_="styled-dropdown"), 
                                        class_="bottom-fix"
