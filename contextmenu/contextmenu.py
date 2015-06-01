@@ -316,16 +316,18 @@ class ContextMenuTransformation(object):
                     if idx == 0 and in_repoindex:
                         # Don't yield a context menu for the repos since they don't have a dir entry
                         continue
+                    entry = self.data['dir']['entries'][idx]
                     menu = tag.div(tag.a(class_="ctx-expander fa fa-angle-down"),
                                    tag.div(
-                                       tag.ul(class_="styled-dropdown"), 
+                                       tag.ul(tag.li(tag.span("%s (version %d)" % (entry.name, entry.rev),
+                                                              class_="plain-text")),
+                                              class_="styled-dropdown"), 
                                        class_="bottom-fix"
                                    ),
                                    id="ctx-%s" % uid,
                                    class_="inline-block margin-left-small dropdown-toggle")
 
                     for provider in sorted(self.context_menu_providers, key=lambda x: x.get_order(self.req)):
-                        entry = self.data['dir']['entries'][idx]
                         content = provider.get_content(self.req, entry, self.data)
                         if content:
                             menu.children[1].children[0].append(tag.li(content))
