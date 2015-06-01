@@ -93,6 +93,8 @@ class SubversionLink(Component):
         # Make sure that repository is a Subversion repository.
         if not is_subversion_repository(data.get('repos')):
             return None
+        if data.get('stickyrev'):
+            return None
 
         if self.env.is_component_enabled("svnurls.svnurls.svnurls"):
             # They are already providing links to subversion, so we won't duplicate them.
@@ -137,6 +139,8 @@ class TortoiseSvnLink(SubversionLink):
     def get_content(self, req, entry, data):
         # Make sure that repository is a Subversion repository.
         if not is_subversion_repository(data.get('repos')):
+            return None
+        if data.get('stickyrev'):
             return None
 
         path = self.get_subversion_path(entry)
