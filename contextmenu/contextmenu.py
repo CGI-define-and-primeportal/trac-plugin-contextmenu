@@ -40,9 +40,7 @@ from trac.web.api import ITemplateStreamFilter
 from api import ISourceBrowserContextMenuProvider
 from genshi.core import Markup, START, END, QName, _ensure
 from trac.config import Option
-from trac.web import ITemplateStreamFilter
-from trac.web.chrome import (add_stylesheet, ITemplateProvider, add_javascript,
-                            add_ctxtnav, add_script, add_script_data)
+from trac.web.chrome import (ITemplateProvider, add_ctxtnav, add_script, add_script_data)
 from trac.web.api import IRequestHandler, IRequestFilter
 from trac.util.compat import all
 from trac.util.translation import _
