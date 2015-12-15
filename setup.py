@@ -1,21 +1,21 @@
 # coding: utf-8
+# Copyright (c) 2015 CGI
+
 #
-# Copyright (c) 2010, Logica
-# 
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
-# 
-#     * Redistributions of source code must retain the above copyright 
+#
+#     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
 #     * Redistributions in binary form must reproduce the above copyright
 #       notice, this list of conditions and the following disclaimer in the
 #       documentation and/or other materials provided with the distribution.
-#     * Neither Logica nor the names of its contributors may be used to 
-#       endorse or promote products derived from this software without 
-#       specific prior written permission.
-# 
+#     * Neither the name of CGI nor the names of its
+#       contributors may be used to endorse or promote products derived from
+#       this software without specific prior written permission.
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -36,9 +36,14 @@ setup(
     version = '0.1',
     author = 'Pontus Enmark',
     author_email = 'pontus.enmark@logica.com',
+    maintainer="CGI CoreTeam",
+    maintainer_email="coreteam.service.desk.se@cgi.com",
+    contact="CGI CoreTeam",
+    contact_email="coreteam.service.desk.se@cgi.com",
+    classifiers=['License :: OSI Approved :: BSD License'],
+    license='BSD',
+    url='http://define.primeportal.com/',
     description = "Drop down menu for the Source Browser.",
-    license = "Copyright (c) 2010, Logica. All rights reserved. Released under the 3-clause BSD license.",
-    url = "http://trac-hacks.org/wiki/ContextMenuPlugin",
     packages = ['contextmenu'],
     package_data = {'contextmenu' : ['htdocs/*.js',
                                      'htdocs/*.css',
